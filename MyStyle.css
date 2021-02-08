@@ -1,0 +1,58 @@
+body
+{
+    background-color: rgb(230, 230, 230);
+}
+
+h1
+{
+    color: black;
+    text-align: center;
+}
+
+p
+{
+    color: black;
+    text-align: center;
+}
+
+.border
+{
+    height: 700px;
+    width: 800px;
+    border: 2px; 
+    border-style: solid; 
+    border-color: black;
+    margin: auto;
+}
+
+.container
+{
+    width: 600px;
+    height: 600px;
+    margin-top: 50px;
+    margin-left: 100px;
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: 600px;
+}
+
+.one
+{
+    border: 1px; 
+    border-style: solid; 
+    border-color: rgb(255, 0, 0);
+}
+
+.two
+{
+    border: 1px; 
+    border-style: solid; 
+    border-color: rgb(0, 17, 255);
+}
+
+.three
+{
+    border: 1px; 
+    border-style: solid; 
+    border-color: rgb(5, 148, 0);
+}
