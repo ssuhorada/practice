@@ -1,13 +1,18 @@
 function test (x,y) 
 {
-    this.width = 20;
-    this.height = 20;
-    this.speedX = 0;
-    this.speedY = 0;
-    this.x = x;
-    this.y = y;
-    this.update = function () 
+    
+}
+
+function fillGrid()
+{
+    nothing = "";
+    el = document.createElement("div")
+    cont = document.getElementsByClassName("container")
+    for (let i = 0; i<16; i++)
     {
-        
-    }   
+        for (let j = 0; j<10; j++)
+        {
+            document.cont.append(el.id=i+nothing+j)
+        }
+    }
 }
