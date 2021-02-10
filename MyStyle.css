@@ -66,3 +66,11 @@ p
     border-color: rgb(0, 0, 0);
     background-color: rgb(61, 32, 32);
 }
+
+.obstr
+{
+    border: 1px; 
+    border-style: solid; 
+    border-color: rgb(0, 0, 0);
+    background-color: rgb(102, 22, 22);
+}
