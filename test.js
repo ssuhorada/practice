@@ -107,7 +107,7 @@ function playerCheck(x, y) {
     else return "free"
 }
 
-function keyUp() {
+function keyDown() {
     document.addEventListener(('keydown'), function (event) {
         if (event.key == 'ArrowRight') {
             if (playerPosY < 7) {
@@ -132,44 +132,42 @@ function randomInterval(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+
 function drawObstr(x, y) {
     let field = document.querySelectorAll('.pixel0, .pixel1, .player')
     obstr.push(field[x * 10 + y])
 
-    if(x>=0 && x<16)
-    {
-        field[x*10+y].classList.remove('pixel0')
-        field[x*10+y].classList.add('obstr')
-        field[x*10+y].classList.add('pixel1')
+    if (x >= 0 && x < 16) {
+        field[x * 10 + y].classList.remove('pixel0')
+        field[x * 10 + y].classList.add('obstr')
+        field[x * 10 + y].classList.add('pixel1')
     }
 
-    if(x>=1 && x<17)
-    {
-        field[x*10+y-10].classList.remove('pixel0')
-        field[x*10+y-10].classList.add('obstr')
-        field[x*10+y-10].classList.add('pixel1')
-        field[x*10+y-11].classList.remove('pixel0')
-        field[x*10+y-11].classList.add('obstr')
-        field[x*10+y-11].classList.add('pixel1')
-        field[x*10+y-9].classList.remove('pixel0')
-        field[x*10+y-9].classList.add('obstr')
-        field[x*10+y-9].classList.add('pixel1')
+    if (x >= 1 && x < 17) {
+        field[x * 10 + y - 10].classList.remove('pixel0')
+        field[x * 10 + y - 10].classList.add('obstr')
+        field[x * 10 + y - 10].classList.add('pixel1')
+        field[x * 10 + y - 11].classList.remove('pixel0')
+        field[x * 10 + y - 11].classList.add('obstr')
+        field[x * 10 + y - 11].classList.add('pixel1')
+        field[x * 10 + y - 9].classList.remove('pixel0')
+        field[x * 10 + y - 9].classList.add('obstr')
+        field[x * 10 + y - 9].classList.add('pixel1')
     }
 
     if (x >= 2 && x < 18) {
-        field[x * 10 + y-20].classList.remove('pixel0')
-        field[x * 10 + y-20].classList.add('obstr')
-        field[x * 10 + y-20].classList.add('pixel1')
+        field[x * 10 + y - 20].classList.remove('pixel0')
+        field[x * 10 + y - 20].classList.add('obstr')
+        field[x * 10 + y - 20].classList.add('pixel1')
     }
 
-    if(x>=3 && x<19)
-    {
-        field[x*10+y-31].classList.remove('pixel0')
-        field[x*10+y-31].classList.add('obstr')
-        field[x*10+y-31].classList.add('pixel1')
-        field[x*10+y-29].classList.remove('pixel0')
-        field[x*10+y-29].classList.add('obstr')
-        field[x*10+y-29].classList.add('pixel1')
+    if (x >= 3 && x < 19) {
+        field[x * 10 + y - 31].classList.remove('pixel0')
+        field[x * 10 + y - 31].classList.add('obstr')
+        field[x * 10 + y - 31].classList.add('pixel1')
+        field[x * 10 + y - 29].classList.remove('pixel0')
+        field[x * 10 + y - 29].classList.add('obstr')
+        field[x * 10 + y - 29].classList.add('pixel1')
     }
 }
 
@@ -177,40 +175,37 @@ function deleteObstr(x, y) {
     let field = document.querySelectorAll('.pixel0, .pixel1, .player')
     obstr.push(field[x * 10 + y])
 
-    if(x>=0 && x<16)
-    {
-        field[x*10+y].classList.add('pixel0')
-        field[x*10+y].classList.remove('obstr')
-        field[x*10+y].classList.remove('pixel1')
+    if (x >= 0 && x < 16) {
+        field[x * 10 + y].classList.add('pixel0')
+        field[x * 10 + y].classList.remove('obstr')
+        field[x * 10 + y].classList.remove('pixel1')
     }
 
-    if(x>=1 && x<17)
-    {
-        field[x*10+y-10].classList.add('pixel0')
-        field[x*10+y-10].classList.remove('obstr')
-        field[x*10+y-10].classList.remove('pixel1')
-        field[x*10+y-11].classList.add('pixel0')
-        field[x*10+y-11].classList.remove('obstr')
-        field[x*10+y-11].classList.remove('pixel1')
-        field[x*10+y-9].classList.add('pixel0')
-        field[x*10+y-9].classList.remove('obstr')
-        field[x*10+y-9].classList.remove('pixel1')
+    if (x >= 1 && x < 17) {
+        field[x * 10 + y - 10].classList.add('pixel0')
+        field[x * 10 + y - 10].classList.remove('obstr')
+        field[x * 10 + y - 10].classList.remove('pixel1')
+        field[x * 10 + y - 11].classList.add('pixel0')
+        field[x * 10 + y - 11].classList.remove('obstr')
+        field[x * 10 + y - 11].classList.remove('pixel1')
+        field[x * 10 + y - 9].classList.add('pixel0')
+        field[x * 10 + y - 9].classList.remove('obstr')
+        field[x * 10 + y - 9].classList.remove('pixel1')
     }
 
     if (x >= 2 && x < 18) {
-        field[x * 10 + y-20].classList.add('pixel0')
-        field[x * 10 + y-20].classList.remove('obstr')
-        field[x * 10 + y-20].classList.remove('pixel1')
+        field[x * 10 + y - 20].classList.add('pixel0')
+        field[x * 10 + y - 20].classList.remove('obstr')
+        field[x * 10 + y - 20].classList.remove('pixel1')
     }
 
-    if(x>=3 && x<19)
-    {
-        field[x*10+y-31].classList.add('pixel0')
-        field[x*10+y-31].classList.remove('obstr')
-        field[x*10+y-31].classList.remove('pixel1')
-        field[x*10+y-29].classList.add('pixel0')
-        field[x*10+y-29].classList.remove('obstr')
-        field[x*10+y-29].classList.remove('pixel1')
+    if (x >= 3 && x < 19) {
+        field[x * 10 + y - 31].classList.add('pixel0')
+        field[x * 10 + y - 31].classList.remove('obstr')
+        field[x * 10 + y - 31].classList.remove('pixel1')
+        field[x * 10 + y - 29].classList.add('pixel0')
+        field[x * 10 + y - 29].classList.remove('obstr')
+        field[x * 10 + y - 29].classList.remove('pixel1')
     }
 }
 
@@ -221,6 +216,38 @@ let prevX = playerPosX
 let prevY = playerPosY
 let leftBorder = 0, rightBorder = 0
 let timeout = 1000, i = 0
+
+//---------------------------------------------Проба сделать шаблон для отрисовки
+class player {
+    constructor(x, y, px, py) {
+        this.playerPosX = x
+        this.playerPosY = y
+        this.prevX = px
+        this.prevY = py
+    }
+
+    allPixels = []
+    mas = 0
+
+    draw() {
+        this.mas = this.playerPosX * 10 + this.playerPosY
+        let field = document.querySelectorAll('.pixel0, .pixel1, .player')
+
+        this.allPixels[0] = this.mas
+        this.allPixels[1] = this.mas - 10
+        this.allPixels[2] = this.mas - 11
+        this.allPixels[3] = this.mas - 9
+        this.allPixels[4] = this.mas - 20
+        this.allPixels[5] = this.mas + 9
+        this.allPixels[6] = this.mas + 11
+
+        for (let i = 0; i < 7; i++) {
+            field[this.allPixels[i]].classList.remove("pixel0")
+            field[this.allPixels[i]].classList.add("player")
+            field[this.allPixels[i]].classList.add("pixel1")
+        }
+    }
+}
 
 function render() {
     setTimeout(() => {
@@ -245,9 +272,11 @@ function render() {
 
 const main = () => {
     fillGrid()
-    drawPlayer(playerPosX, playerPosY)
+    //drawPlayer(playerPosX, playerPosY)
+    pl = new player(playerPosX,playerPosY,prevX,prevY)
+    pl.draw()
     render()
-    keyUp()
+    keyDown()
 };
 
 document.addEventListener('readystatechange', () => {
