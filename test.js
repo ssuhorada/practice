@@ -1,3 +1,11 @@
+let obstr = []
+let playerPosX = 12
+let playerPosY = 5
+let prevX = playerPosX
+let prevY = playerPosY
+let leftBorder = 0, rightBorder = 0
+let timeout = 80, i = 0
+
 function fillGrid() {
     let cont = document.querySelector(".container")
     for (let i = 0; i < 16; i++) {
@@ -26,105 +34,9 @@ function fillGrid() {
     }
 }
 
-function playerCheck(x, y) {
-    let fieldCheck = document.querySelectorAll('.pixel0, .pixel1, .player')
-
-    if (fieldCheck[x * 10 + y - 2].matches(".borderPixel")) {
-        return "leftBorder"
-    }
-    else if (fieldCheck[x * 10 + y + 2].matches(".borderPixel")) {
-        return "rightBorder"
-    }
-    else return "free"
-}
-
 function randomInterval(min, max) {
     return Math.random() * (max - min) + min;
 }
-
-function drawObstr(x, y) {
-    let field = document.querySelectorAll('.pixel0, .pixel1, .player')
-    obstr.push(field[x * 10 + y])
-
-    if (x >= 0 && x < 16) {
-        field[x * 10 + y].classList.remove('pixel0')
-        field[x * 10 + y].classList.add('obstr')
-        field[x * 10 + y].classList.add('pixel1')
-    }
-
-    if (x >= 1 && x < 17) {
-        field[x * 10 + y - 10].classList.remove('pixel0')
-        field[x * 10 + y - 10].classList.add('obstr')
-        field[x * 10 + y - 10].classList.add('pixel1')
-        field[x * 10 + y - 11].classList.remove('pixel0')
-        field[x * 10 + y - 11].classList.add('obstr')
-        field[x * 10 + y - 11].classList.add('pixel1')
-        field[x * 10 + y - 9].classList.remove('pixel0')
-        field[x * 10 + y - 9].classList.add('obstr')
-        field[x * 10 + y - 9].classList.add('pixel1')
-    }
-
-    if (x >= 2 && x < 18) {
-        field[x * 10 + y - 20].classList.remove('pixel0')
-        field[x * 10 + y - 20].classList.add('obstr')
-        field[x * 10 + y - 20].classList.add('pixel1')
-    }
-
-    if (x >= 3 && x < 19) {
-        field[x * 10 + y - 31].classList.remove('pixel0')
-        field[x * 10 + y - 31].classList.add('obstr')
-        field[x * 10 + y - 31].classList.add('pixel1')
-        field[x * 10 + y - 29].classList.remove('pixel0')
-        field[x * 10 + y - 29].classList.add('obstr')
-        field[x * 10 + y - 29].classList.add('pixel1')
-    }
-}
-
-function deleteObstr(x, y) {
-    let field = document.querySelectorAll('.pixel0, .pixel1, .player')
-    obstr.push(field[x * 10 + y])
-
-    if (x >= 0 && x < 16) {
-        field[x * 10 + y].classList.add('pixel0')
-        field[x * 10 + y].classList.remove('obstr')
-        field[x * 10 + y].classList.remove('pixel1')
-    }
-
-    if (x >= 1 && x < 17) {
-        field[x * 10 + y - 10].classList.add('pixel0')
-        field[x * 10 + y - 10].classList.remove('obstr')
-        field[x * 10 + y - 10].classList.remove('pixel1')
-        field[x * 10 + y - 11].classList.add('pixel0')
-        field[x * 10 + y - 11].classList.remove('obstr')
-        field[x * 10 + y - 11].classList.remove('pixel1')
-        field[x * 10 + y - 9].classList.add('pixel0')
-        field[x * 10 + y - 9].classList.remove('obstr')
-        field[x * 10 + y - 9].classList.remove('pixel1')
-    }
-
-    if (x >= 2 && x < 18) {
-        field[x * 10 + y - 20].classList.add('pixel0')
-        field[x * 10 + y - 20].classList.remove('obstr')
-        field[x * 10 + y - 20].classList.remove('pixel1')
-    }
-
-    if (x >= 3 && x < 19) {
-        field[x * 10 + y - 31].classList.add('pixel0')
-        field[x * 10 + y - 31].classList.remove('obstr')
-        field[x * 10 + y - 31].classList.remove('pixel1')
-        field[x * 10 + y - 29].classList.add('pixel0')
-        field[x * 10 + y - 29].classList.remove('obstr')
-        field[x * 10 + y - 29].classList.remove('pixel1')
-    }
-}
-
-let obstr = []
-let playerPosX = 14
-let playerPosY = 6
-let prevX = playerPosX
-let prevY = playerPosY
-let leftBorder = 0, rightBorder = 0
-let timeout = 1000, i = 0
 
 class player {
     constructor(x, y, px, py) {
@@ -134,102 +46,176 @@ class player {
         this.prevY = py
     }
 
-    allPixels = []
-    mas = 0
+    playerModel = [
+        { x: 0, y: 0, fill: false }, { x: 0, y: 1, fill: true }, { x: 0, y: 2, fill: false },
+        { x: 1, y: 0, fill: true }, { x: 1, y: 1, fill: true }, { x: 1, y: 2, fill: true },
+        { x: 2, y: 0, fill: false }, { x: 2, y: 1, fill: true }, { x: 2, y: 2, fill: false },
+        { x: 3, y: 0, fill: true }, { x: 3, y: 1, fill: false }, { x: 3, y: 2, fill: true }
+    ]
+
+    lastPlayer = []
 
     draw() {
-        this.mas = this.playerPosX * 10 + this.playerPosY
-        let field = document.querySelectorAll('.pixel0, .pixel1, .player')
-
-        this.allPixels[0] = this.mas
-        this.allPixels[1] = this.mas - 10
-        this.allPixels[2] = this.mas - 11
-        this.allPixels[3] = this.mas - 9
-        this.allPixels[4] = this.mas - 20
-        this.allPixels[5] = this.mas + 9
-        this.allPixels[6] = this.mas + 11
-
-        for (let i = 0; i < 7; i++) {
-            field[this.allPixels[i]].classList.remove("pixel0")
-            field[this.allPixels[i]].classList.add("player")
-            field[this.allPixels[i]].classList.add("pixel1")
-        }
+        let i = 0
+        this.lastPlayer = this.playerModel.map(({ x, y, f }) => {
+            x += this.playerPosX
+            y += this.playerPosY
+            f = this.playerModel[i].fill
+            this.prevX = this.playerPosX
+            this.prevY = this.playerPosY
+            i++
+            if (f == true) {
+                document.getElementById(x + " " + y).classList.remove("pixel0")
+                document.getElementById(x + " " + y).classList.add("player")
+                document.getElementById(x + " " + y).classList.add("pixel1")
+            }
+            return { x, y, f }
+        })
     }
 
     delete() {
-        this.mas = this.prevX * 10 + this.prevY
-        let field = document.querySelectorAll('.pixel0, .pixel1, .player')
 
-        this.allPixels[0] = this.mas
-        this.allPixels[1] = this.mas - 10
-        this.allPixels[2] = this.mas - 11
-        this.allPixels[3] = this.mas - 9
-        this.allPixels[4] = this.mas - 20
-        this.allPixels[5] = this.mas + 9
-        this.allPixels[6] = this.mas + 11
-
-        for (let i = 0; i < 7; i++) {
-            field[this.allPixels[i]].classList.add("pixel0")
-            field[this.allPixels[i]].classList.remove("player")
-            field[this.allPixels[i]].classList.remove("pixel1")
-        }
+        let i = 0
+        this.playerModel.map(({ x, y, f }) => {
+            x += this.prevX
+            y += this.prevY
+            f = this.playerModel[i].fill
+            i++
+            if (f == true) {
+                document.getElementById(x + " " + y).classList.add("pixel0")
+                document.getElementById(x + " " + y).classList.remove("player")
+                document.getElementById(x + " " + y).classList.remove("pixel1")
+            }
+        })
     }
 
     playerMove(event) {
         if (event.key == 'ArrowRight') {
-            if (this.playerPosY < 7) {
+            if (this.playerPosY < 6) {
                 this.playerPosY++
                 this.delete()
                 this.draw()
-                //playerMove(playerPosX, playerPosY, prevX, prevY)
-                this.prevX = this.playerPosX
-                this.prevY = this.playerPosY
             }
         }
         if (event.key == 'ArrowLeft') {
-            if (this.playerPosY > 2) {
+            if (this.playerPosY > 1) {
                 this.playerPosY--
                 this.delete()
                 this.draw()
-                //playerMove(playerPosX, playerPosY, prevX, prevY)
-                this.prevX = this.playerPosX
-                this.prevY = this.playerPosY
             }
         }
     }
+
+    playerCheck() {
+        if (document.getElementById(this.playerPosX + " " + (this.playerPosY - 1)).matches(".borderPixel")) {
+            return "leftBorder"
+        }
+        else if (document.getElementById(this.playerPosX + " " + (this.playerPosY + 3)).matches(".borderPixel")) {
+            return "rightBorder"
+        }
+        else return "free"
+    }
 }
 
+class obstruction {
+    constructor(obX, obY) {
+        this.x = obX
+        this.y = obY
+        this.px = prevX
+        this.py = prevY
+    }
+
+    tick = 0
+    lastObstr = []
+
+    obstructionModel = [
+        { x: 0, y: 0, fill: true }, { x: 0, y: 1, fill: false }, { x: 0, y: 2, fill: true },
+        { x: 1, y: 0, fill: false }, { x: 1, y: 1, fill: true }, { x: 1, y: 2, fill: false },
+        { x: 2, y: 0, fill: true }, { x: 2, y: 1, fill: true }, { x: 2, y: 2, fill: true },
+        { x: 3, y: 0, fill: false }, { x: 3, y: 1, fill: true }, { x: 3, y: 2, fill: false }
+    ]
+
+    drawObstr() {
+        let i = 0
+        this.lastObstr = this.obstructionModel.map(({ x, y, f }) => {
+            x += this.x
+            y += this.y
+            f = this.obstructionModel[i].fill
+            this.px = this.x
+            this.py = this.y
+            i++
+            //this.tick++
+            if (f == true && document.getElementById(x + " " + y)) {
+                document.getElementById(x + " " + y).classList.remove("pixel0")
+                document.getElementById(x + " " + y).classList.add("obstr")
+                document.getElementById(x + " " + y).classList.add("pixel1")
+            }
+            return { x, y, f }
+        })
+    }
+
+    deleteObstr() {
+        let i = 0
+        this.obstructionModel.map(({ x, y, f }) => {
+            x += this.px
+            y += this.py
+            f = this.obstructionModel[i].fill
+            i++
+            if (f == true && document.getElementById(x + " " + y)) {
+                document.getElementById(x + " " + y).classList.add("pixel0")
+                document.getElementById(x + " " + y).classList.remove("obstr")
+                document.getElementById(x + " " + y).classList.remove("pixel1")
+            }
+        })
+    }
+
+    moveObstr(obstruction) {
+        setTimeout(() => {
+            this.moveObstr(obstruction)
+            {
+                obstruction.deleteObstr()
+                obstruction.drawObstr()
+                obstruction.x++
+            }
+        }, 500)
+    }
+}
 
 function render(player) {
     setTimeout(() => {
         render(player)
         {
-            if (playerCheck(playerPosX, playerPosY) == "free") {
+            let check = player.playerCheck()
+            if (check == "free") {
                 leftBorder = 0
                 rightBorder = 0
             }
-            else if (playerCheck(playerPosX, playerPosY) == "leftBorder") {
+            else if (check == "leftBorder") {
                 leftBorder = 1
                 rightBorder = 0
             }
-            else if (playerCheck(playerPosX, playerPosY) == "rightBorder") {
+            else if (check == "rightBorder") {
                 rightBorder = 1
                 leftBorder = 0
             }
-            console.log(player.playerPosX, player.playerPosY, player.prevX, player.prevY)
+            console.log(player.playerPosX, player.playerPosY, player.prevX, player.prevY, player.playerCheck(), leftBorder, rightBorder)
         }
     }, timeout);
 }
 
 const main = () => {
-    fillGrid()
+    obs = new obstruction(-5, 1)
     pl = new player(playerPosX, playerPosY, prevX, prevY)
+
+    fillGrid()
     pl.draw()
-    render(pl)
     document.addEventListener(('keydown'), function (event) {
         pl.playerMove(event)
     })
-};
+    
+    render(pl)
+    obs.moveObstr(obs)
+}
 
 document.addEventListener('readystatechange', () => {
     if (document.readyState === 'complete') main();
