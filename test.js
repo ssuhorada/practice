@@ -26,75 +26,6 @@ function fillGrid() {
     }
 }
 
-function drawPlayer(x, y) {
-    let field = document.querySelectorAll('.pixel0, .pixel1, .player')
-
-    field[x * 10 + y].classList.remove("pixel0")
-    field[x * 10 + y].classList.add("player")
-    field[x * 10 + y].classList.add("pixel1")
-
-    field[x * 10 + y - 10].classList.remove("pixel0")
-    field[x * 10 + y - 10].classList.add("player")
-    field[x * 10 + y - 10].classList.add("pixel1")
-
-    field[x * 10 + y - 11].classList.remove("pixel0")
-    field[x * 10 + y - 11].classList.add("player")
-    field[x * 10 + y - 11].classList.add("pixel1")
-
-    field[x * 10 + y - 9].classList.remove("pixel0")
-    field[x * 10 + y - 9].classList.add("player")
-    field[x * 10 + y - 9].classList.add("pixel1")
-
-    field[x * 10 + y - 20].classList.remove("pixel0")
-    field[x * 10 + y - 20].classList.add("player")
-    field[x * 10 + y - 20].classList.add("pixel1")
-
-    field[x * 10 + y + 9].classList.remove("pixel0")
-    field[x * 10 + y + 9].classList.add("player")
-    field[x * 10 + y + 9].classList.add("pixel1")
-
-    field[x * 10 + y + 11].classList.remove("pixel0")
-    field[x * 10 + y + 11].classList.add("player")
-    field[x * 10 + y + 11].classList.add("pixel1")
-}
-
-function deletePlayer(x, y) {
-    let field = document.querySelectorAll('.pixel0, .pixel1, .player')
-
-    field[x * 10 + y].classList.remove("player")
-    field[x * 10 + y].classList.remove("pixel1")
-    field[x * 10 + y].classList.add("pixel0")
-
-    field[x * 10 + y - 10].classList.remove("player")
-    field[x * 10 + y - 10].classList.remove("pixel1")
-    field[x * 10 + y - 10].classList.add("pixel0")
-
-    field[x * 10 + y - 11].classList.remove("player")
-    field[x * 10 + y - 11].classList.remove("pixel1")
-    field[x * 10 + y - 11].classList.add("pixel0")
-
-    field[x * 10 + y - 9].classList.remove("player")
-    field[x * 10 + y - 9].classList.remove("pixel1")
-    field[x * 10 + y - 9].classList.add("pixel0")
-
-    field[x * 10 + y - 20].classList.remove("player")
-    field[x * 10 + y - 20].classList.remove("pixel1")
-    field[x * 10 + y - 20].classList.add("pixel0")
-
-    field[x * 10 + y + 9].classList.remove("player")
-    field[x * 10 + y + 9].classList.remove("pixel1")
-    field[x * 10 + y + 9].classList.add("pixel0")
-
-    field[x * 10 + y + 11].classList.remove("player")
-    field[x * 10 + y + 11].classList.remove("pixel1")
-    field[x * 10 + y + 11].classList.add("pixel0")
-}
-
-function playerMove(x, y, xpr, ypr) {
-    deletePlayer(xpr, ypr)
-    drawPlayer(x, y)
-}
-
 function playerCheck(x, y) {
     let fieldCheck = document.querySelectorAll('.pixel0, .pixel1, .player')
 
@@ -107,31 +38,9 @@ function playerCheck(x, y) {
     else return "free"
 }
 
-function keyDown() {
-    document.addEventListener(('keydown'), function (event) {
-        if (event.key == 'ArrowRight') {
-            if (playerPosY < 7) {
-                playerPosY++
-                playerMove(playerPosX, playerPosY, prevX, prevY)
-            }
-            prevX = playerPosX
-            prevY = playerPosY
-        }
-        if (event.key == 'ArrowLeft') {
-            if (playerPosY > 2) {
-                playerPosY--
-                playerMove(playerPosX, playerPosY, prevX, prevY)
-            }
-            prevX = playerPosX
-            prevY = playerPosY
-        }
-    })
-}
-
 function randomInterval(min, max) {
     return Math.random() * (max - min) + min;
 }
-
 
 function drawObstr(x, y) {
     let field = document.querySelectorAll('.pixel0, .pixel1, .player')
@@ -217,7 +126,6 @@ let prevY = playerPosY
 let leftBorder = 0, rightBorder = 0
 let timeout = 1000, i = 0
 
-//---------------------------------------------Проба сделать шаблон для отрисовки
 class player {
     constructor(x, y, px, py) {
         this.playerPosX = x
@@ -247,11 +155,54 @@ class player {
             field[this.allPixels[i]].classList.add("pixel1")
         }
     }
+
+    delete() {
+        this.mas = this.prevX * 10 + this.prevY
+        let field = document.querySelectorAll('.pixel0, .pixel1, .player')
+
+        this.allPixels[0] = this.mas
+        this.allPixels[1] = this.mas - 10
+        this.allPixels[2] = this.mas - 11
+        this.allPixels[3] = this.mas - 9
+        this.allPixels[4] = this.mas - 20
+        this.allPixels[5] = this.mas + 9
+        this.allPixels[6] = this.mas + 11
+
+        for (let i = 0; i < 7; i++) {
+            field[this.allPixels[i]].classList.add("pixel0")
+            field[this.allPixels[i]].classList.remove("player")
+            field[this.allPixels[i]].classList.remove("pixel1")
+        }
+    }
+
+    playerMove(event) {
+        if (event.key == 'ArrowRight') {
+            if (this.playerPosY < 7) {
+                this.playerPosY++
+                this.delete()
+                this.draw()
+                //playerMove(playerPosX, playerPosY, prevX, prevY)
+                this.prevX = this.playerPosX
+                this.prevY = this.playerPosY
+            }
+        }
+        if (event.key == 'ArrowLeft') {
+            if (this.playerPosY > 2) {
+                this.playerPosY--
+                this.delete()
+                this.draw()
+                //playerMove(playerPosX, playerPosY, prevX, prevY)
+                this.prevX = this.playerPosX
+                this.prevY = this.playerPosY
+            }
+        }
+    }
 }
 
-function render() {
+
+function render(player) {
     setTimeout(() => {
-        render()
+        render(player)
         {
             if (playerCheck(playerPosX, playerPosY) == "free") {
                 leftBorder = 0
@@ -265,18 +216,19 @@ function render() {
                 rightBorder = 1
                 leftBorder = 0
             }
-            console.log(leftBorder, rightBorder, playerPosX, playerPosY)
+            console.log(player.playerPosX, player.playerPosY, player.prevX, player.prevY)
         }
     }, timeout);
 }
 
 const main = () => {
     fillGrid()
-    //drawPlayer(playerPosX, playerPosY)
-    pl = new player(playerPosX,playerPosY,prevX,prevY)
+    pl = new player(playerPosX, playerPosY, prevX, prevY)
     pl.draw()
-    render()
-    keyDown()
+    render(pl)
+    document.addEventListener(('keydown'), function (event) {
+        pl.playerMove(event)
+    })
 };
 
 document.addEventListener('readystatechange', () => {
