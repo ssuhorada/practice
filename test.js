@@ -1,9 +1,4 @@
 let obstr = []
-let playerPosX = 12
-let playerPosY = 5
-let prevX = playerPosX
-let prevY = playerPosY
-let leftBorder = 0, rightBorder = 0
 let timeout = 80, i = 0
 
 function fillGrid() {
@@ -39,11 +34,11 @@ function randomInterval(min, max) {
 }
 
 class player {
-    constructor(x, y, px, py) {
+    constructor(x, y) {
         this.playerPosX = x
         this.playerPosY = y
-        this.prevX = px
-        this.prevY = py
+        this.prevX = this.playerPosX
+        this.prevY = this.playerPosY
     }
 
     playerModel = [
@@ -121,8 +116,8 @@ class obstruction {
     constructor(obX, obY) {
         this.x = obX
         this.y = obY
-        this.px = prevX
-        this.py = prevY
+        this.px = this.x
+        this.py = this.y
     }
 
     tick = 0
@@ -181,31 +176,33 @@ class obstruction {
     }
 }
 
-function render(player) {
+function ticker(player, obstruction) {
     setTimeout(() => {
-        render(player)
+        ticker(player, obstruction)
         {
-            let check = player.playerCheck()
-            if (check == "free") {
-                leftBorder = 0
-                rightBorder = 0
-            }
-            else if (check == "leftBorder") {
-                leftBorder = 1
-                rightBorder = 0
-            }
-            else if (check == "rightBorder") {
-                rightBorder = 1
-                leftBorder = 0
-            }
-            console.log(player.playerPosX, player.playerPosY, player.prevX, player.prevY, player.playerCheck(), leftBorder, rightBorder)
+            
+            // let leftBorder = 0, rightBorder = 0
+            // let check = player.playerCheck()
+            // if (check == "free") {
+            //     leftBorder = 0
+            //     rightBorder = 0
+            // }
+            // else if (check == "leftBorder") {
+            //     leftBorder = 1
+            //     rightBorder = 0
+            // }
+            // else if (check == "rightBorder") {
+            //     rightBorder = 1
+            //     leftBorder = 0
+            // }
+            // console.log(player.playerPosX, player.playerPosY, player.prevX, player.prevY, player.playerCheck(), leftBorder, rightBorder)
         }
     }, timeout);
 }
 
 const main = () => {
     obs = new obstruction(-5, 1)
-    pl = new player(playerPosX, playerPosY, prevX, prevY)
+    pl = new player(12, 5)
 
     fillGrid()
     pl.draw()
@@ -213,7 +210,7 @@ const main = () => {
         pl.playerMove(event)
     })
     
-    render(pl)
+    ticker(pl)
     obs.moveObstr(obs)
 }
 
