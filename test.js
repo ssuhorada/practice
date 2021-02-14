@@ -159,22 +159,18 @@ class obstruction {
         obstruction.deleteObstr()
         obstruction.drawObstr()
         obstruction.x++
-        if (obstruction.x == 19) {
-            despawn(obstruction)
-        }
     }
 }
 
-let spawne = 0
 let obstrArray = []
 let kostil = 0
 let test = true
+let letSpawn = true
 function ticker(player, obstruct) {
     if (test)
         setTimeout(() => {
             ticker(player, obstruct)
             {
-                //проверка на столкновение
                 for (let i = 0; i < 7; i++) {
                     for (let j = 0; j < 7; j++) {
                         obstruct.forEach(el => {
@@ -184,20 +180,20 @@ function ticker(player, obstruct) {
                                 test = false
                                 location.reload()
                             }
+                            if (el.x == 19) despawn(el)
+                            if (el.x == 7 && letSpawn) {
+                                spawn()
+                                letSpawn = false
+                            }
                         })
                     }
 
                 }
-
                 kostil++
                 if (kostil == 11) {
                     obstruct.forEach(el => el.moveObstr(el))
                     kostil = 0
-                }
-                spawne++
-                if (spawne == 130) {
-                    spawn()
-                    spawne = 0
+                    letSpawn = true
                 }
             }
         }, 55);
@@ -206,10 +202,8 @@ function ticker(player, obstruct) {
 function spawn() {
     let rand = randomInterval(1, 6)
     rand = Math.round(rand)
-    //if (obstrArray.length == 0) {
     obstrArray.unshift(new obstruction(-4, rand))
     obstrArray[0].drawObstr()
-    //}
 }
 
 function despawn(obstruct) {
@@ -228,7 +222,6 @@ const main = () => {
     })
     spawn()
     ticker(pl, obstrArray)
-    //obs.moveObstr(obs)
 }
 
 document.addEventListener('readystatechange', () => {
