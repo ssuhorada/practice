@@ -113,7 +113,6 @@ class obstruction {
         this.py = this.y
     }
 
-    tick = 0
     lastObstr = []
     multiplier = 1
 
@@ -157,61 +156,79 @@ class obstruction {
     }
 
     moveObstr(obstruction) {
-        setTimeout(() => {
-            this.moveObstr(obstruction)
-            {
-                obstruction.deleteObstr()
-                obstruction.drawObstr()
-                obstruction.x++
-            }
-        }, 550 * this.multiplier)
+        obstruction.deleteObstr()
+        obstruction.drawObstr()
+        obstruction.x++
+        if (obstruction.x == 19) {
+            despawn(obstruction)
+        }
     }
 }
 
+let spawne = 0
+let obstrArray = []
+let kostil = 0
 let test = true
-function ticker(player, obstruction) {
+function ticker(player, obstruct) {
     if (test)
         setTimeout(() => {
-            ticker(player, obstruction)
+            ticker(player, obstruct)
             {
                 //проверка на столкновение
                 for (let i = 0; i < 7; i++) {
                     for (let j = 0; j < 7; j++) {
-                        if (player.lastPlayer[i].x == obstruction.lastObstr[j].x &&
-                            player.lastPlayer[i].y == obstruction.lastObstr[j].y && test) {
-                            alert("Вы проиграли. Нажмите ок чтобы начать сначала")
-                            test = false
-                            location.reload()
-                        }
+                        obstruct.forEach(el => {
+                            if (player.lastPlayer[i].x == el.lastObstr[j].x &&
+                                player.lastPlayer[i].y == el.lastObstr[j].y && test) {
+                                alert("Вы проиграли. Нажмите ок чтобы начать сначала")
+                                test = false
+                                location.reload()
+                            }
+                        })
                     }
+
+                }
+
+                kostil++
+                if (kostil == 11) {
+                    obstruct.forEach(el => el.moveObstr(el))
+                    kostil = 0
+                }
+                spawne++
+                if (spawne == 130) {
+                    spawn()
+                    spawne = 0
                 }
             }
-        }, 550);
+        }, 55);
 }
 
-let obstr = []
-function spawner() {
-    setTimeout(() => {
-        let rand = randomInterval(1, 8)
-        rand = Math.round(rand)
-        if (obstr.length == 0) {
-            obstr.push(new obstruction(-4, rand))
-        }
-    }, 550);
+function spawn() {
+    let rand = randomInterval(1, 6)
+    rand = Math.round(rand)
+    //if (obstrArray.length == 0) {
+    obstrArray.unshift(new obstruction(-4, rand))
+    obstrArray[0].drawObstr()
+    //}
+}
+
+function despawn(obstruct) {
+    obstruct.deleteObstr()
+    obstrArray.pop()
 }
 
 const main = () => {
-    let el = document.getElementById('start')
+    //let el = document.getElementById('start')
     let pl = new player(12, 5)
-    
+
     fillGrid()
     pl.draw()
     document.addEventListener(('keydown'), function (event) {
         pl.playerMove(event)
     })
-        let obs = new obstruction(-4, 1)
-        ticker(pl, obs)
-        obs.moveObstr(obs)
+    spawn()
+    ticker(pl, obstrArray)
+    //obs.moveObstr(obs)
 }
 
 document.addEventListener('readystatechange', () => {
