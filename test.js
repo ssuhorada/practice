@@ -168,6 +168,8 @@ let kostil = 0
 let test = true
 let letSpawn = true
 let al
+let dificult = 0
+let divider = 15
 
 function ticker(player, obstruct) {
     if (test)
@@ -182,8 +184,12 @@ function ticker(player, obstruct) {
                                 test = false
                                 alert()
                                 window.location.href = window.location.href;
+                                // console.log('!!')
                             }
-                            if (el.x == 19) despawn(el)
+                            if (el.x == 19) {
+                                despawn(el)
+                                dificult++
+                            }
                             if (el.x == 7 && letSpawn) {
                                 spawn()
                                 letSpawn = false
@@ -193,13 +199,17 @@ function ticker(player, obstruct) {
 
                 }
                 kostil++
-                if (kostil == 11) {
+                if (kostil == divider) {
                     obstruct.forEach(el => el.moveObstr(el))
                     kostil = 0
                     letSpawn = true
                 }
+                if (dificult == 1) {
+                    if (divider > 2) divider--
+                    dificult = 0
+                }
             }
-        }, 55);
+        }, 43);
 }
 
 function spawn() {
