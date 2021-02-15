@@ -217,16 +217,31 @@ function despawn(obstruct) {
 const main = () => {
     let el = document.getElementById('start')
     let res = document.getElementById('results')
+    let clear = document.getElementById('clear')
     let pl = new player(12, 5)
     let startFlag = true
+    clear.onclick = () => {
+        localStorage.clear()
+    }
 
+    if (localStorage.getItem('customer')) res.append(localStorage.getItem('customer'))
     fillGrid()
     pl.draw()
-    al = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
-    if (al != "Писать сюда") res.append(al)
-    else res.append("Гость")
-    if (res.textContent == "null") res.textContent = "Гость"
-
+    if (!localStorage.getItem('customer')) {
+        al = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
+        if (al != "Писать сюда") {
+            res.append(al)
+            localStorage.setItem('customer', al)
+        }
+        else {
+            res.append("Гость")
+            localStorage.setItem('customer', "Гость")
+        }
+        if (res.textContent == "null") {
+            res.textContent = "Гость"
+            localStorage.setItem('customer', "Гость")
+        }
+    }
     el.onclick = () => {
         if (startFlag) {
             document.addEventListener(('keydown'), function (event) {
