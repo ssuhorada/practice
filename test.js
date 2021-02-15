@@ -162,7 +162,7 @@ class obstruction {
     }
 }
 
-//--------------------------переменные убрать бы
+//--------------------------переменные убрать бы..............
 let obstrArray = []
 let kostil = 0
 let test = true
@@ -184,9 +184,8 @@ function ticker(player, obstruct) {
                             if (player.lastPlayer[i].x == el.lastObstr[j].x &&
                                 player.lastPlayer[i].y == el.lastObstr[j].y && test) {
                                 test = false
-                                alert()
+                                alert("Бабах")
                                 window.location.href = window.location.href;
-                                // console.log('!!')
                             }
                             if (el.x == 19) {
                                 despawn(el)
