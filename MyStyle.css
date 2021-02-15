@@ -85,5 +85,20 @@ p{
 }
 
 .info{
+    font-size: 14px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
+    height: auto;
+    text-align:justify;
+}
+
+.results{
+    text-align:center;
+    margin-top: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
     font-size: 24px;
+    height: 420px;
 }

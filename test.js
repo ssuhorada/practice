@@ -162,10 +162,13 @@ class obstruction {
     }
 }
 
+//--------------------------переменные убрать бы
 let obstrArray = []
 let kostil = 0
 let test = true
 let letSpawn = true
+let al
+
 function ticker(player, obstruct) {
     if (test)
         setTimeout(() => {
@@ -176,9 +179,9 @@ function ticker(player, obstruct) {
                         obstruct.forEach(el => {
                             if (player.lastPlayer[i].x == el.lastObstr[j].x &&
                                 player.lastPlayer[i].y == el.lastObstr[j].y && test) {
-                                alert("Вы проиграли. Нажмите ок чтобы начать сначала")
                                 test = false
-                                location.reload()
+                                alert()
+                                window.location.href = window.location.href;
                             }
                             if (el.x == 19) despawn(el)
                             if (el.x == 7 && letSpawn) {
@@ -212,16 +215,28 @@ function despawn(obstruct) {
 }
 
 const main = () => {
-    //let el = document.getElementById('start')
+    let el = document.getElementById('start')
+    let res = document.getElementById('results')
     let pl = new player(12, 5)
+    let startFlag = true
 
     fillGrid()
     pl.draw()
-    document.addEventListener(('keydown'), function (event) {
-        pl.playerMove(event)
-    })
-    spawn()
-    ticker(pl, obstrArray)
+    al = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
+    if (al != "Писать сюда") res.append(al)
+    else res.append("Гость")
+    if (res.textContent == "null") res.textContent = "Гость"
+
+    el.onclick = () => {
+        if (startFlag) {
+            document.addEventListener(('keydown'), function (event) {
+                pl.playerMove(event)
+            })
+            startFlag = false
+            spawn()
+            ticker(pl, obstrArray)
+        }
+    }
 }
 
 document.addEventListener('readystatechange', () => {
