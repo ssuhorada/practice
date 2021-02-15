@@ -170,6 +170,8 @@ let letSpawn = true
 let al
 let dificult = 0
 let divider = 15
+let score = 0
+let stopScore = false
 
 function ticker(player, obstruct) {
     if (test)
@@ -194,6 +196,18 @@ function ticker(player, obstruct) {
                                 spawn()
                                 letSpawn = false
                             }
+                            if (el.x == 17 && !stopScore) {
+                                score += 100
+                                let el = document.getElementById("scores")
+                                if (!el.textContent) el.append("Ваши очки: " + score)
+                                else el.textContent = "Ваши очки: " + score
+                                if (localStorage.getItem('scores')) {
+                                    if (localStorage.getItem('scores') < score) {
+                                        localStorage.setItem('scores', score)
+                                    }
+                                } else localStorage.setItem('scores', score)
+                                stopScore = true
+                            }
                         })
                     }
 
@@ -203,6 +217,7 @@ function ticker(player, obstruct) {
                     obstruct.forEach(el => el.moveObstr(el))
                     kostil = 0
                     letSpawn = true
+                    stopScore = false
                 }
                 if (dificult == 1) {
                     if (divider > 2) divider--
@@ -234,17 +249,17 @@ const main = () => {
         localStorage.clear()
     }
 
-    if (localStorage.getItem('customer')) res.append(localStorage.getItem('customer'))
+    if (localStorage.getItem('customer')) res.prepend(localStorage.getItem('customer'))
     fillGrid()
     pl.draw()
     if (!localStorage.getItem('customer')) {
         al = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
         if (al != "Писать сюда") {
-            res.append(al)
+            res.prepend(al)
             localStorage.setItem('customer', al)
         }
         else {
-            res.append("Гость")
+            res.prepend("Гость")
             localStorage.setItem('customer', "Гость")
         }
         if (res.textContent == "null") {
@@ -262,6 +277,8 @@ const main = () => {
             ticker(pl, obstrArray)
         }
     }
+
+    if (localStorage.getItem('scores')) document.getElementById("scores").prepend("Лучший Ваш результат сегодня: " + localStorage.getItem('scores'))
 }
 
 document.addEventListener('readystatechange', () => {

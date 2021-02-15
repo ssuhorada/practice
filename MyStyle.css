@@ -102,3 +102,11 @@ p{
     font-size: 24px;
     height: 420px;
 }
+
+.scores{
+    margin-top: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+    font-size: 24px;
+    height: 375px;
+}
