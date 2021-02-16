@@ -164,17 +164,10 @@ class obstruction {
 
 //--------------------------переменные убрать бы..............
 let obstrArray = []
-let kostil = 0
-let test = true
-let letSpawn = true
-let al
-let dificult = 0
-let divider = 15
 let score = 0
-let stopScore = false
 
 function ticker(player, obstruct) {
-    if (test)
+    if (JSON.parse(sessionStorage.getItem("onlyOneCollision")))
         setTimeout(() => {
             ticker(player, obstruct)
             {
@@ -182,20 +175,21 @@ function ticker(player, obstruct) {
                     for (let j = 0; j < 7; j++) {
                         obstruct.forEach(el => {
                             if (player.lastPlayer[i].x == el.lastObstr[j].x &&
-                                player.lastPlayer[i].y == el.lastObstr[j].y && test) {
-                                test = false
+                                player.lastPlayer[i].y == el.lastObstr[j].y &&
+                                JSON.parse(sessionStorage.getItem("onlyOneCollision"))) {
+                                sessionStorage.setItem("onlyOneCollision", JSON.stringify(false))
                                 alert("Бабах")
                                 window.location.href = window.location.href;
                             }
                             if (el.x == 19) {
                                 despawn(el)
-                                dificult++
+                                sessionStorage.setItem("changeDif", "1")
                             }
-                            if (el.x == 7 && letSpawn) {
+                            if (el.x == 7 && JSON.parse(sessionStorage.getItem("letSpawn"))) {
                                 spawn()
-                                letSpawn = false
+                                sessionStorage.setItem("letSpawn", JSON.stringify(false))
                             }
-                            if (el.x == 17 && !stopScore) {
+                            if (el.x == 17 && JSON.parse(sessionStorage.getItem("letScore"))) {
                                 score += 100
                                 let el = document.getElementById("scores")
                                 if (!el.textContent) el.append("Ваши очки: " + score)
@@ -205,22 +199,27 @@ function ticker(player, obstruct) {
                                         localStorage.setItem('scores', score)
                                     }
                                 } else localStorage.setItem('scores', score)
-                                stopScore = true
+                                sessionStorage.setItem("letScore", JSON.stringify(false))
                             }
                         })
                     }
-
                 }
-                kostil++
-                if (kostil == divider) {
+                let store = JSON.parse(sessionStorage.getItem("tickForDivide"))
+                store++
+                sessionStorage.setItem("tickForDivide", JSON.stringify(store))
+                if (sessionStorage.getItem("tickForDivide") == sessionStorage.getItem("divider")) {
                     obstruct.forEach(el => el.moveObstr(el))
-                    kostil = 0
-                    letSpawn = true
-                    stopScore = false
+                    sessionStorage.setItem("tickForDivide", "0")
+                    sessionStorage.setItem("letSpawn", JSON.stringify(true))
+                    sessionStorage.setItem("letScore", JSON.stringify(true))
                 }
-                if (dificult == 1) {
-                    if (divider > 2) divider--
-                    dificult = 0
+                if (JSON.parse(sessionStorage.getItem("changeDif")) == 1) {
+                    let temp = JSON.parse(sessionStorage.getItem("divider"))
+                    if (temp > 2) {
+                        temp--
+                        sessionStorage.setItem("divider", JSON.stringify(temp))
+                    }
+                    sessionStorage.setItem("changeDif", "0")
                 }
             }
         }, 43);
@@ -239,41 +238,49 @@ function despawn(obstruct) {
 }
 
 const main = () => {
-    let el = document.getElementById('start')
-    let res = document.getElementById('results')
-    let clear = document.getElementById('clear')
-    let pl = new player(12, 5)
+    sessionStorage.setItem("tickForDivide", "0")
+    sessionStorage.setItem("changeDif", "0")
+    sessionStorage.setItem("divider", "15")
+    sessionStorage.setItem("onlyOneCollision", JSON.stringify(true))
+    sessionStorage.setItem("letSpawn", JSON.stringify(true))
+    sessionStorage.setItem("letScore", JSON.stringify(true))
+    let startButton = document.getElementById('start')
+    let resultsGrid = document.getElementById('results')
+    let clearButton = document.getElementById('clear')
+    let tempPlayer = new player(12, 5)
     let startFlag = true
-    clear.onclick = () => {
+    let tempAlert
+
+    clearButton.onclick = () => {
         localStorage.clear()
     }
 
-    if (localStorage.getItem('customer')) res.prepend(localStorage.getItem('customer'))
+    if (localStorage.getItem('customer')) resultsGrid.prepend(localStorage.getItem('customer'))
     fillGrid()
-    pl.draw()
+    tempPlayer.draw()
     if (!localStorage.getItem('customer')) {
-        al = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
-        if (al != "Писать сюда") {
-            res.prepend(al)
-            localStorage.setItem('customer', al)
+        tempAlert = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
+        if (tempAlert != "Писать сюда") {
+            resultsGrid.prepend(tempAlert)
+            localStorage.setItem('customer', tempAlert)
         }
         else {
-            res.prepend("Гость")
+            resultsGrid.prepend("Гость")
             localStorage.setItem('customer', "Гость")
         }
-        if (res.textContent == "null") {
-            res.textContent = "Гость"
+        if (resultsGrid.textContent == "null") {
+            resultsGrid.textContent = "Гость"
             localStorage.setItem('customer', "Гость")
         }
     }
-    el.onclick = () => {
+    startButton.onclick = () => {
         if (startFlag) {
             document.addEventListener(('keydown'), function (event) {
-                pl.playerMove(event)
+                tempPlayer.playerMove(event)
             })
             startFlag = false
             spawn()
-            ticker(pl, obstrArray)
+            ticker(tempPlayer, obstrArray)
         }
     }
 
