@@ -1,5 +1,3 @@
-let timeout = 80
-
 function fillGrid() {
     let cont = document.querySelector(".container")
     for (let i = 0; i < 16; i++) {
@@ -93,16 +91,6 @@ class player {
             }
         }
     }
-
-    playerCheck() {
-        if (document.getElementById(this.playerPosX + " " + (this.playerPosY - 1)).matches(".borderPixel")) {
-            return "leftBorder"
-        }
-        else if (document.getElementById(this.playerPosX + " " + (this.playerPosY + 3)).matches(".borderPixel")) {
-            return "rightBorder"
-        }
-        else return "free"
-    }
 }
 
 class obstruction {
@@ -131,7 +119,6 @@ class obstruction {
             this.px = this.x
             this.py = this.y
             i++
-            //this.tick++
             if (document.getElementById(x + " " + y)) {
                 document.getElementById(x + " " + y).classList.remove("pixel0")
                 document.getElementById(x + " " + y).classList.add("obstr")
@@ -230,6 +217,7 @@ function spawn() {
     rand = Math.round(rand)
     obstrArray.unshift(new obstruction(-4, rand))
     obstrArray[0].drawObstr()
+    //return new obstruction(-4, rand)
 }
 
 function despawn(obstruct) {
@@ -244,6 +232,7 @@ const main = () => {
     sessionStorage.setItem("onlyOneCollision", JSON.stringify(true))
     sessionStorage.setItem("letSpawn", JSON.stringify(true))
     sessionStorage.setItem("letScore", JSON.stringify(true))
+    //sessionStorage.setItem("obstrArray", JSON.stringify())
     let startButton = document.getElementById('start')
     let resultsGrid = document.getElementById('results')
     let clearButton = document.getElementById('clear')
@@ -255,9 +244,10 @@ const main = () => {
         localStorage.clear()
     }
 
-    if (localStorage.getItem('customer')) resultsGrid.prepend(localStorage.getItem('customer'))
     fillGrid()
     tempPlayer.draw()
+    //Вход/загрузка предыдущих результатов
+    if (localStorage.getItem('customer')) resultsGrid.prepend(localStorage.getItem('customer'))
     if (!localStorage.getItem('customer')) {
         tempAlert = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
         if (tempAlert != "Писать сюда") {
@@ -273,6 +263,7 @@ const main = () => {
             localStorage.setItem('customer', "Гость")
         }
     }
+
     startButton.onclick = () => {
         if (startFlag) {
             document.addEventListener(('keydown'), function (event) {
