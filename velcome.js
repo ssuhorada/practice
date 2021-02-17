@@ -1,4 +1,3 @@
-
 class TestClass {
     constructor(a, b) {
         this.a = a
@@ -9,10 +8,13 @@ class TestClass {
 let array = []
 let el = document.getElementById("test")
 el.onclick = () => {
-    array.push(new TestClass(1,2))
+    sessionStorage.removeItem("newItem")
+    array.unshift(new TestClass(1,2))
     sessionStorage.setItem("newItem", JSON.stringify(array))
     array.pop()
-    array.push(JSON.parse(sessionStorage.getItem("newTimer")))
-    array.push(new TestClass(3,4))
+    array = JSON.parse(sessionStorage.getItem("newItem"))
+    array.unshift(new TestClass(3,4))
     sessionStorage.setItem("newItem", JSON.stringify(array))
+    array.pop()
+    array.pop()
 }

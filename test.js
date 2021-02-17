@@ -4,16 +4,7 @@ function fillGrid() {
         for (let j = 0; j < 10; j++) {
             let el = document.createElement("div")
             el.id = i + " " + j
-            if (j == 0) {
-                el.classList.add("borderPixel")
-                el.classList.add("pixel1")
-                if (cont) cont.append(el)
-            } else
-                if (j > 0 && j < 9) {
-                    el.classList.add("pixel0")
-                    if (cont) cont.append(el)
-                }
-            if (j == 9) {
+            if (j == 0 || j == 9) {
                 el.classList.add("borderPixel")
                 el.classList.add("pixel1")
                 if (cont) cont.append(el)
@@ -30,7 +21,7 @@ function randomInterval(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-class player {
+class Player {
     constructor(x, y) {
         this.playerPosX = x
         this.playerPosY = y
@@ -93,7 +84,7 @@ class player {
     }
 }
 
-class obstruction {
+class Obstruction {
     constructor(obX, obY) {
         this.x = obX
         this.y = obY
@@ -102,7 +93,6 @@ class obstruction {
     }
 
     lastObstr = []
-    multiplier = 1
 
     obstructionModel = [
         { x: 0, y: 0 }, { x: 0, y: 2 },
@@ -149,6 +139,26 @@ class obstruction {
     }
 }
 
+class Store {
+    //localStorage (очки\игрок)
+}
+
+class Game {
+    //sessinStorage (состояние игры)
+}
+
+function spawn() {
+    let rand = randomInterval(1, 6)
+    rand = Math.round(rand)
+    obstrArray.unshift(new Obstruction(-4, rand))
+    obstrArray[0].drawObstr()
+}
+
+function despawn(obstruct) {
+    obstruct.deleteObstr()
+    obstrArray.pop()
+}
+
 //--------------------------переменные убрать бы..............
 let obstrArray = []
 let score = 0
@@ -166,7 +176,7 @@ function ticker(player, obstruct) {
                                 JSON.parse(sessionStorage.getItem("onlyOneCollision"))) {
                                 sessionStorage.setItem("onlyOneCollision", JSON.stringify(false))
                                 alert("Бабах")
-                                window.location.href = window.location.href;
+                                location.reload()
                             }
                             if (el.x == 19) {
                                 despawn(el)
@@ -209,36 +219,25 @@ function ticker(player, obstruct) {
                     sessionStorage.setItem("changeDif", "0")
                 }
             }
-        }, 43);
-}
-
-function spawn() {
-    let rand = randomInterval(1, 6)
-    rand = Math.round(rand)
-    obstrArray.unshift(new obstruction(-4, rand))
-    obstrArray[0].drawObstr()
-    //return new obstruction(-4, rand)
-}
-
-function despawn(obstruct) {
-    obstruct.deleteObstr()
-    obstrArray.pop()
+        }, 40);
 }
 
 const main = () => {
+    let startButton = document.getElementById('start')
+    let resultsGrid = document.getElementById('results')
+    let clearButton = document.getElementById('clear')
+
+    sessionStorage.clear()
     sessionStorage.setItem("tickForDivide", "0")
     sessionStorage.setItem("changeDif", "0")
     sessionStorage.setItem("divider", "15")
     sessionStorage.setItem("onlyOneCollision", JSON.stringify(true))
     sessionStorage.setItem("letSpawn", JSON.stringify(true))
     sessionStorage.setItem("letScore", JSON.stringify(true))
-    //sessionStorage.setItem("obstrArray", JSON.stringify())
-    let startButton = document.getElementById('start')
-    let resultsGrid = document.getElementById('results')
-    let clearButton = document.getElementById('clear')
-    let tempPlayer = new player(12, 5)
-    let startFlag = true
+
+    let tempPlayer = new Player(12, 5)
     let tempAlert
+    let startFlag = true
 
     clearButton.onclick = () => {
         localStorage.clear()
@@ -266,7 +265,7 @@ const main = () => {
 
     startButton.onclick = () => {
         if (startFlag) {
-            document.addEventListener(('keydown'), function (event) {
+            document.addEventListener('keydown', function (event) {
                 tempPlayer.playerMove(event)
             })
             startFlag = false
