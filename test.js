@@ -139,12 +139,79 @@ class Obstruction {
     }
 }
 
-class Store {
-    //localStorage (очки\игрок)
+class Score {
+    tempScore = 0
+    bestScore = 0
+    
+    deleteCustomer (){
+        localStorage.clear()
+    }
+
+    get_bestScore() {
+        this.bestScore = localStorage.getItem("bestScore")
+        return this.bestScore
+    }
+
+    compareBestScore(scoreAtNow) {
+        if (scoreAtNow > this.bestScore) {
+            localStorage.setItem("bestScore", JSON.stringify(scoreAtNow))
+            this.bestScore = scoreAtNow
+        }
+    }
+
+    
 }
 
 class Game {
-    //sessinStorage (состояние игры)
+    onlyOneCollision = true
+    letSpawn = true
+    letScore = true
+    tickForDivide = 0
+    changeDif = 0
+    divider = 15
+    despawnLevel = 19
+    spawnLevel = 7
+    noVisionLevel = 17
+    timeout = 40
+
+    setAllSessionStorage() {
+        sessionStorage.setItem("onlyOneCollision", JSON.stringify(this.onlyOneCollision))
+        sessionStorage.setItem("tickForDivide", JSON.stringify(this.tickForDivide))
+        sessionStorage.setItem("changeDif", JSON.stringify(this.changeDif))
+        sessionStorage.setItem("letSpawn", JSON.stringify(this.letSpawn))
+        sessionStorage.setItem("letScore", JSON.stringify(this.letScore))
+        sessionStorage.setItem("divider", JSON.stringify(this.divider))
+    }
+
+    set_onlyOneCollision(state) {
+        this.onlyOneCollision = state
+        this.setAllSessionStorage()
+    }
+
+    set_tickForDivide(state) {
+        this.tickForDivide = state
+        this.setAllSessionStorage()
+    }
+
+    set_changeDif(state) {
+        this.changeDif = state
+        this.setAllSessionStorage()
+    }
+
+    set_letSpawn(state) {
+        this.letSpawn = state
+        this.setAllSessionStorage()
+    }
+
+    set_letScore(state) {
+        this.letScore = state
+        this.setAllSessionStorage()
+    }
+
+    set_divider(state) {
+        this.divider = state
+        this.setAllSessionStorage()
+    }
 }
 
 function spawn() {
@@ -163,89 +230,71 @@ function despawn(obstruct) {
 let obstrArray = []
 let score = 0
 
-function ticker(player, obstruct) {
-    if (JSON.parse(sessionStorage.getItem("onlyOneCollision")))
+function ticker(player, obstruct, game) {
+    if (game.onlyOneCollision)
         setTimeout(() => {
-            ticker(player, obstruct)
-            {
-                for (let i = 0; i < 7; i++) {
-                    for (let j = 0; j < 7; j++) {
-                        obstruct.forEach(el => {
-                            if (player.lastPlayer[i].x == el.lastObstr[j].x &&
-                                player.lastPlayer[i].y == el.lastObstr[j].y &&
-                                JSON.parse(sessionStorage.getItem("onlyOneCollision"))) {
-                                sessionStorage.setItem("onlyOneCollision", JSON.stringify(false))
-                                alert("Бабах")
-                                location.reload()
-                            }
-                            if (el.x == 19) {
-                                despawn(el)
-                                sessionStorage.setItem("changeDif", "1")
-                            }
-                            if (el.x == 7 && JSON.parse(sessionStorage.getItem("letSpawn"))) {
-                                spawn()
-                                sessionStorage.setItem("letSpawn", JSON.stringify(false))
-                            }
-                            if (el.x == 17 && JSON.parse(sessionStorage.getItem("letScore"))) {
-                                score += 100
-                                let el = document.getElementById("scores")
-                                if (!el.textContent) el.append("Ваши очки: " + score)
-                                else el.textContent = "Ваши очки: " + score
-                                if (localStorage.getItem('scores')) {
-                                    if (localStorage.getItem('scores') < score) {
-                                        localStorage.setItem('scores', score)
-                                    }
-                                } else localStorage.setItem('scores', score)
-                                sessionStorage.setItem("letScore", JSON.stringify(false))
-                            }
-                        })
-                    }
+            ticker(player, obstruct, game)
+            obstruct.forEach(el => {
+                if (player.lastPlayer.some((plItem) => el.lastObstr.find((obsItem) =>
+                    plItem.x === obsItem.x && plItem.y === obsItem.y)) && game.onlyOneCollision) {
+                    game.set_onlyOneCollision(false)
+                    alert("Бабах")
+                    location.reload()
                 }
-                let store = JSON.parse(sessionStorage.getItem("tickForDivide"))
-                store++
-                sessionStorage.setItem("tickForDivide", JSON.stringify(store))
-                if (sessionStorage.getItem("tickForDivide") == sessionStorage.getItem("divider")) {
-                    obstruct.forEach(el => el.moveObstr(el))
-                    sessionStorage.setItem("tickForDivide", "0")
-                    sessionStorage.setItem("letSpawn", JSON.stringify(true))
-                    sessionStorage.setItem("letScore", JSON.stringify(true))
+                if (el.x === game.despawnLevel) {
+                    despawn(el)
+                    game.set_changeDif(1)
                 }
-                if (JSON.parse(sessionStorage.getItem("changeDif")) == 1) {
-                    let temp = JSON.parse(sessionStorage.getItem("divider"))
-                    if (temp > 2) {
-                        temp--
-                        sessionStorage.setItem("divider", JSON.stringify(temp))
-                    }
-                    sessionStorage.setItem("changeDif", "0")
+                if (el.x === game.spawnLevel && game.letSpawn) {
+                    spawn()
+                    game.set_letSpawn(false)
                 }
+                if (el.x == game.noVisionLevel && game.letScore) {
+                    score += 100
+                    let el = document.getElementById("scores")
+                    if (!el.textContent) el.append("Ваши очки: " + score)
+                    else el.textContent = "Ваши очки: " + score
+                    if (localStorage.getItem('scores'))
+                        if (localStorage.getItem('scores') < score) {
+                            localStorage.setItem('scores', score)
+                        }
+                        else localStorage.setItem('scores', score)
+                    game.set_letScore(false)
+                }
+            })
+            game.set_tickForDivide(game.tickForDivide + 1)
+            if (game.tickForDivide === game.divider) {
+                obstruct.forEach(el => el.moveObstr(el))
+                game.set_tickForDivide(0)
+                game.set_letScore(true)
+                game.set_letSpawn(true)
             }
-        }, 40);
+            if (game.changeDif === 1) {
+                if (game.divider > 2) game.set_divider(game.divider - 1)
+                game.set_changeDif(0)
+            }
+        }, game.timeout);
 }
 
 const main = () => {
-    let startButton = document.getElementById('start')
-    let resultsGrid = document.getElementById('results')
-    let clearButton = document.getElementById('clear')
+    const startButton = document.getElementById('start')
+    const resultsGrid = document.getElementById('results')
+    const clearButton = document.getElementById('clear')
 
+    const g = new Game
     sessionStorage.clear()
-    sessionStorage.setItem("tickForDivide", "0")
-    sessionStorage.setItem("changeDif", "0")
-    sessionStorage.setItem("divider", "15")
-    sessionStorage.setItem("onlyOneCollision", JSON.stringify(true))
-    sessionStorage.setItem("letSpawn", JSON.stringify(true))
-    sessionStorage.setItem("letScore", JSON.stringify(true))
+    g.setAllSessionStorage()
 
-    let tempPlayer = new Player(12, 5)
-    let tempAlert
+    const tempPlayer = new Player(12, 5)
     let startFlag = true
+    let tempAlert
 
-    clearButton.onclick = () => {
+    clearButton.addEventListener('click', () => {
         localStorage.clear()
-    }
+    })
 
     fillGrid()
     tempPlayer.draw()
-    //Вход/загрузка предыдущих результатов
     if (localStorage.getItem('customer')) resultsGrid.prepend(localStorage.getItem('customer'))
     if (!localStorage.getItem('customer')) {
         tempAlert = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
@@ -263,22 +312,20 @@ const main = () => {
         }
     }
 
-    startButton.onclick = () => {
+    startButton.addEventListener('click', () => {
         if (startFlag) {
             document.addEventListener('keydown', function (event) {
                 tempPlayer.playerMove(event)
             })
             startFlag = false
             spawn()
-            ticker(tempPlayer, obstrArray)
+            ticker(tempPlayer, obstrArray, g)
         }
-    }
+    })
 
     if (localStorage.getItem('scores')) document.getElementById("scores").prepend("Лучший Ваш результат сегодня: " + localStorage.getItem('scores'))
 }
 
 document.addEventListener('readystatechange', () => {
-    if (document.readyState === 'complete') {
-        main();
-    }
+    if (document.readyState === 'complete') main();
 })
