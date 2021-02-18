@@ -1,18 +1,18 @@
-function fillGrid() {
+let obstrArray = []
+
+function fillGrid(rows, columns) {
     let cont = document.querySelector(".container")
-    for (let i = 0; i < 16; i++) {
-        for (let j = 0; j < 10; j++) {
+    for (let i = 0; i < columns; i++) {
+        for (let j = 0; j < rows; j++) {
             let el = document.createElement("div")
             el.id = i + " " + j
             if (j == 0 || j == 9) {
                 el.classList.add("borderPixel")
-                el.classList.add("pixel1")
                 if (cont) cont.append(el)
-            } else
-                if (j > 0 && j < 9) {
-                    el.classList.add("pixel0")
-                    if (cont) cont.append(el)
-                }
+            } else {
+                el.classList.add("pixel0")
+                if (cont) cont.append(el)
+            }
         }
     }
 }
@@ -45,24 +45,17 @@ class Player {
             y += this.playerPosY
             this.prevX = this.playerPosX
             this.prevY = this.playerPosY
-            i++
-            document.getElementById(x + " " + y).classList.remove("pixel0")
             document.getElementById(x + " " + y).classList.add("player")
-            document.getElementById(x + " " + y).classList.add("pixel1")
             return { x, y }
         })
     }
 
     delete() {
-
         let i = 0
         this.playerModel.map(({ x, y }) => {
             x += this.prevX
             y += this.prevY
-            i++
-            document.getElementById(x + " " + y).classList.add("pixel0")
             document.getElementById(x + " " + y).classList.remove("player")
-            document.getElementById(x + " " + y).classList.remove("pixel1")
         })
     }
 
@@ -108,11 +101,8 @@ class Obstruction {
             y += this.y
             this.px = this.x
             this.py = this.y
-            i++
             if (document.getElementById(x + " " + y)) {
-                document.getElementById(x + " " + y).classList.remove("pixel0")
                 document.getElementById(x + " " + y).classList.add("obstr")
-                document.getElementById(x + " " + y).classList.add("pixel1")
             }
             return { x, y }
         })
@@ -123,11 +113,8 @@ class Obstruction {
         this.obstructionModel.map(({ x, y }) => {
             x += this.px
             y += this.py
-            i++
             if (document.getElementById(x + " " + y)) {
-                document.getElementById(x + " " + y).classList.add("pixel0")
                 document.getElementById(x + " " + y).classList.remove("obstr")
-                document.getElementById(x + " " + y).classList.remove("pixel1")
             }
         })
     }
@@ -142,24 +129,43 @@ class Obstruction {
 class Score {
     tempScore = 0
     bestScore = 0
-    
-    deleteCustomer (){
+
+    deleteCustomer() {
         localStorage.clear()
     }
 
-    get_bestScore() {
-        this.bestScore = localStorage.getItem("bestScore")
-        return this.bestScore
+    saveCustomer(cust) {
+        localStorage.setItem("customer", JSON.stringify(cust))
+        localStorage.setItem("score", "0")
+    }
+
+    customerIsNull() {
+        if (localStorage.getItem(`customer`)) return false
+        else return true
+    }
+
+    not0() {
+        if (JSON.parse(localStorage.getItem(`score`)) > 0) return true
+        else return false
     }
 
     compareBestScore(scoreAtNow) {
-        if (scoreAtNow > this.bestScore) {
-            localStorage.setItem("bestScore", JSON.stringify(scoreAtNow))
-            this.bestScore = scoreAtNow
+        if (scoreAtNow > JSON.parse(localStorage.getItem(`score`))) {
+            localStorage.setItem(`score`, JSON.stringify(scoreAtNow))
         }
     }
 
-    
+    scoreUp(x) {
+        this.tempScore += x
+    }
+
+    get_customer() {
+        return JSON.parse(localStorage.getItem(`customer`))
+    }
+
+    get_bestScore() {
+        return JSON.parse(localStorage.getItem(`score`))
+    }
 }
 
 class Game {
@@ -173,6 +179,8 @@ class Game {
     spawnLevel = 7
     noVisionLevel = 17
     timeout = 40
+    rows = 16
+    columns = 10
 
     setAllSessionStorage() {
         sessionStorage.setItem("onlyOneCollision", JSON.stringify(this.onlyOneCollision))
@@ -226,14 +234,10 @@ function despawn(obstruct) {
     obstrArray.pop()
 }
 
-//--------------------------переменные убрать бы..............
-let obstrArray = []
-let score = 0
-
-function ticker(player, obstruct, game) {
+function ticker(player, obstruct, game, score) {
     if (game.onlyOneCollision)
         setTimeout(() => {
-            ticker(player, obstruct, game)
+            ticker(player, obstruct, game, score)
             obstruct.forEach(el => {
                 if (player.lastPlayer.some((plItem) => el.lastObstr.find((obsItem) =>
                     plItem.x === obsItem.x && plItem.y === obsItem.y)) && game.onlyOneCollision) {
@@ -250,15 +254,11 @@ function ticker(player, obstruct, game) {
                     game.set_letSpawn(false)
                 }
                 if (el.x == game.noVisionLevel && game.letScore) {
-                    score += 100
-                    let el = document.getElementById("scores")
-                    if (!el.textContent) el.append("Ваши очки: " + score)
-                    else el.textContent = "Ваши очки: " + score
-                    if (localStorage.getItem('scores'))
-                        if (localStorage.getItem('scores') < score) {
-                            localStorage.setItem('scores', score)
-                        }
-                        else localStorage.setItem('scores', score)
+                    score.scoreUp(100)
+                    let el = document.getElementById(`scores`)
+                    if (!el.textContent) el.append(`Ваши очки: ${score.tempScore}`)
+                    else el.textContent = `Ваши очки: ${score.tempScore}`
+                    score.compareBestScore(score.tempScore)
                     game.set_letScore(false)
                 }
             })
@@ -281,45 +281,42 @@ const main = () => {
     const resultsGrid = document.getElementById('results')
     const clearButton = document.getElementById('clear')
 
+    const score = new Score
     const g = new Game
-    sessionStorage.clear()
-    g.setAllSessionStorage()
-
     const tempPlayer = new Player(12, 5)
+
     let startFlag = true
     let tempAlert
 
-    clearButton.addEventListener('click', () => {
-        localStorage.clear()
-    })
+    sessionStorage.clear()
 
-    fillGrid()
+    g.setAllSessionStorage()
+    clearButton.addEventListener('click', () => localStorage.clear())
+    fillGrid(g.columns, g.rows)
     tempPlayer.draw()
-    if (localStorage.getItem('customer')) resultsGrid.prepend(localStorage.getItem('customer'))
-    if (!localStorage.getItem('customer')) {
-        tempAlert = prompt("Для сохранения результата введите никнейм:", "Писать сюда")
-        if (tempAlert != "Писать сюда") {
-            resultsGrid.prepend(tempAlert)
-            localStorage.setItem('customer', tempAlert)
-        }
+
+    if (score.not0()) {
+        resultsGrid.prepend(`Ваш лучший результат: ${score.get_bestScore()}`)
+        resultsGrid.prepend(document.createElement(`br`))
+    }
+
+    if (score.customerIsNull()) {
+        tempAlert = prompt(`Для сохранения результата введите никнейм:`, `Писать сюда`)
+        if (tempAlert != `Писать сюда` && tempAlert != null)
+            score.saveCustomer(tempAlert)
         else {
-            resultsGrid.prepend("Гость")
-            localStorage.setItem('customer', "Гость")
-        }
-        if (resultsGrid.textContent == "null") {
-            resultsGrid.textContent = "Гость"
-            localStorage.setItem('customer', "Гость")
+            score.saveCustomer(`Гость`)
+            resultsGrid.prepend(score.get_customer())
         }
     }
+    else resultsGrid.prepend(score.get_customer())
 
     startButton.addEventListener('click', () => {
         if (startFlag) {
-            document.addEventListener('keydown', function (event) {
-                tempPlayer.playerMove(event)
-            })
+            document.addEventListener('keydown', function (event) { tempPlayer.playerMove(event) })
             startFlag = false
             spawn()
-            ticker(tempPlayer, obstrArray, g)
+            ticker(tempPlayer, obstrArray, g, score)
         }
     })
 
