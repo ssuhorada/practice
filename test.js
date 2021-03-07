@@ -1,3 +1,4 @@
+//массив препятствий
 let obstrArray = []
 
 function fillGrid(rows, columns) {
@@ -17,6 +18,7 @@ function fillGrid(rows, columns) {
     }
 }
 
+//рандом в пределах min-max
 function randomInterval(min, max) {
     return Math.random() * (max - min) + min;
 }
@@ -168,6 +170,7 @@ class Score {
     }
 }
 
+//класс игры хранит все необходимые константы
 class Game {
     onlyOneCollision = true
     letSpawn = true
@@ -238,6 +241,7 @@ function ticker(player, obstruct, game, score) {
     if (game.onlyOneCollision)
         setTimeout(() => {
             ticker(player, obstruct, game, score)
+            //проверка столкновений
             obstruct.forEach(el => {
                 if (player.lastPlayer.some((plItem) => el.lastObstr.find((obsItem) =>
                     plItem.x === obsItem.x && plItem.y === obsItem.y)) && game.onlyOneCollision) {
@@ -245,14 +249,17 @@ function ticker(player, obstruct, game, score) {
                     alert("Бабах")
                     location.reload()
                 }
+                //деспавн препятствий
                 if (el.x === game.despawnLevel) {
                     despawn(el)
                     game.set_changeDif(1)
                 }
+                //спавн новых препятствий
                 if (el.x === game.spawnLevel && game.letSpawn) {
                     spawn()
                     game.set_letSpawn(false)
                 }
+                //подсчет очков
                 if (el.x == game.noVisionLevel && game.letScore) {
                     score.scoreUp(100)
                     let el = document.getElementById(`scores`)
@@ -262,6 +269,7 @@ function ticker(player, obstruct, game, score) {
                     game.set_letScore(false)
                 }
             })
+            //увеличение тайм-аута
             game.set_tickForDivide(game.tickForDivide + 1)
             if (game.tickForDivide === game.divider) {
                 obstruct.forEach(el => el.moveObstr(el))
@@ -269,6 +277,7 @@ function ticker(player, obstruct, game, score) {
                 game.set_letScore(true)
                 game.set_letSpawn(true)
             }
+            //увеличение сложности
             if (game.changeDif === 1) {
                 if (game.divider > 2) game.set_divider(game.divider - 1)
                 game.set_changeDif(0)
@@ -302,8 +311,10 @@ const main = () => {
 
     if (score.customerIsNull()) {
         tempAlert = prompt(`Для сохранения результата введите никнейм:`, `Писать сюда`)
-        if (tempAlert != `Писать сюда` && tempAlert != null)
+        if (tempAlert != `Писать сюда` && tempAlert != null && tempAlert != ``) {
             score.saveCustomer(tempAlert)
+            resultsGrid.prepend(score.get_customer())
+        }
         else {
             score.saveCustomer(`Гость`)
             resultsGrid.prepend(score.get_customer())
